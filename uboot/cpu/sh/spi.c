@@ -535,7 +535,10 @@ static int spi_probe_serial_flash(
 		)) &&
 		((devid[1] != 0xc2u) || /* Manufacturer ID */
 		 (devid[2] != 0x20u) || /* Memory Type */
-		 (devid[3] != 0x14u))		/* MX25L8006E */
+		 (
+			(devid[3] != 0x14u) &&	/* MX25L8006E */
+			(devid[3] != 0x15u) 	/* MX25L1606E */
+		))
 	   )
 	{
 		printf("ERROR: Unknown SPI Device detected, devid = 0x%02x, 0x%02x, 0x%02x\n",
@@ -565,6 +568,10 @@ static int spi_probe_serial_flash(
 		if (devid[3] == 0x14u)
 		{
 			deviceName = "MXIC MX25L8006E";	/* 8 Mbit == 1 MiB */
+		}
+		if (devid[3] == 0x15u)
+		{
+			deviceName = "MXIC MX25L1606E";	/* 8 Mbit == 1 MiB */
 		}
 	}
 

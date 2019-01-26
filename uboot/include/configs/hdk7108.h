@@ -67,7 +67,7 @@
  * If so, then define the "CFG_BOOT_FROM_SPI" macro,
  * otherwise (e.g. for NOR/NAND Flash booting), do not define it.
  */
-#undef CFG_BOOT_FROM_SPI		/* define to build a SPI-bootable image */
+#define CFG_BOOT_FROM_SPI		/* define to build a SPI-bootable image */
 
 
 /*-----------------------------------------------------------------------
@@ -79,7 +79,7 @@
 #define CFG_EMI_SPI_BASE	0xB0000000	/* CSA: SPI Flash,  Physical 0x00000000 (128MiB) */
 #define CFG_EMI_NAND_BASE	0xA0000000	/* CSA: NAND Flash, Physical 0x00000000 (128MiB) */
 #define CFG_EMI_NOR_BASE	0xA8000000	/* CSB: NOR Flash,  Physical 0x08000000 (8MiB) */
-#define CFG_NAND_FLEX_CSn_MAP	{ 0 }		/* NAND is on Chip Select CSA */
+#define CFG_NAND_FLEX_CSn_MAP	{ 1 }		/* NAND is on Chip Select CSA */
 #elif defined(CFG_BOOT_FROM_NAND)	/* we are booting from NAND */
 #define CFG_EMI_NAND_BASE	0xA0000000	/* CSA: NAND Flash, Physical 0x00000000 (128iB) */
 #define CFG_EMI_NOR_BASE	0xA8000000	/* CSB: NOR Flash,  Physical 0x08000000 (8MiB) */
@@ -100,7 +100,7 @@
 #error This SoC is not supported in 29-bit mode, please enable SE-mode!
 #endif
 
-#define CFG_SDRAM_SIZE		0x08000000	/* 128 MiB of LMI SDRAM */
+#define CFG_SDRAM_SIZE		0x10000000	/* 256 MiB of LMI SDRAM */
 
 #define CFG_MONITOR_LEN		0x00040000	/* Reserve 256 KiB for Monitor */
 #define CFG_MONITOR_BASE        CFG_FLASH_BASE
@@ -228,7 +228,7 @@
 #	define CFG_USB0_BASE			0xfe000000	/* #0 is rear, next to E-SATA */
 #	define CFG_USB1_BASE			0xfe100000	/* #1 is rear, next to HDMI */
 #	define CFG_USB2_BASE			0xfe200000	/* #2 is front port */
-#	define CFG_USB_BASE			CFG_USB2_BASE
+#	define CFG_USB_BASE			CFG_USB0_BASE
 #	define CFG_USB_OHCI_REGS_BASE		(CFG_USB_BASE+0xffc00)
 #	define CFG_USB_OHCI_SLOT_NAME		"ohci"
 #	define CFG_USB_OHCI_MAX_ROOT_PORTS	1
@@ -291,9 +291,9 @@
  * Note: by default CONFIG_CMD_FLASH is defined in config_cmd_default.h
  */
 #undef CONFIG_CMD_FLASH		/* undefine it, define only if needed */
-#define CONFIG_CMD_FLASH	/* define for NOR flash */
+#undef CONFIG_CMD_FLASH		/* define for NOR flash */
 #define CONFIG_CMD_NAND		/* define for NAND flash */
-#undef  CONFIG_SPI_FLASH	/* define for SPI serial flash */
+#define  CONFIG_SPI_FLASH	/* define for SPI serial flash */
 
 /*-----------------------------------------------------------------------
  * NOR FLASH organization
@@ -357,7 +357,7 @@
 	 * from NAND, then we need to use 3 bytes of ECC per 128 byte
 	 * record.  If so, then define the "CFG_NAND_ECC_HW3_128" macro.
 	 */
-#	define CFG_NAND_ECC_HW3_128	/* define for "boot-from-NAND" compatibility */
+#	undef CFG_NAND_ECC_HW3_128	/* define for "boot-from-NAND" compatibility */
 
 	/*
 	 * Do we want to use STMicroelectronics' proprietary AFM4 (4+3/512)
@@ -379,7 +379,7 @@
 	 * For this offset (and above) we can use any supported
 	 * ECC configuration (e.g 3/256 S/W, or 3/512 H/W).
 	 */
-#	define CFG_NAND_STM_BOOT_MODE_BOUNDARY (1ul << 20)	/* 1 MiB */
+#	undef CFG_NAND_STM_BOOT_MODE_BOUNDARY (1ul << 20)	/* 1 MiB */
 
 	/*
 	 * If we want to store the U-boot environment variables in
@@ -435,7 +435,7 @@
  *		http://git.stlinux.com/?p=stm/u-boot.git;a=commit;h=2af31e5c52142d966fc60393e02609d1a4c358fd
  */
 #if defined(CONFIG_SPI_FLASH)			/* SPI serial flash present ? */
-#	define CONFIG_SPI_FLASH_ST		/* ST M25Pxxx (UK1) */
+#	define CONFIG_SPI_FLASH_MXIC		/* ST MX25xxx */
 #	define CONFIG_SPI			/* enable the SPI driver */
 #	define CONFIG_CMD_EEPROM		/* enable the "eeprom" command set */
 #	define CFG_I2C_FRAM			/* to minimize performance degradation */
@@ -445,6 +445,8 @@
 #	define CONFIG_STM_FSM_SPI		/* Use the H/W FSM for SPI */
 #	define CFG_STM_SPI_FSM_BASE	0xfe902000	/* FSM SPI Controller Base */
 #	define CFG_STM_SPI_CLOCKDIV	4	/* set SPI_CLOCKDIV = 4 */
+#	define CFG_STM_SPI_CONFIGDATA 0x06060061
+#	define CFG_STM_SPI_PROGRAM_ERASE_TIME  0x7A120 /* 5ms */
 #	undef CONFIG_CMD_SPI			/* SPI serial bus command support - NOT with FSM! */
 #endif	/* CONFIG_SPI_FLASH */
 
@@ -458,7 +460,7 @@
 #	define CFG_ENV_IS_IN_FLASH		/* environment in NOR flash */
 #	define CFG_ENV_OFFSET	CFG_MONITOR_LEN	/* immediately after u-boot.bin */
 #	define CFG_ENV_SECT_SIZE	0x20000	/* 128 KiB Sector size */
-#elif 1 && defined(CONFIG_CMD_NAND)		/* NAND flash present ? */
+#elif 0 && defined(CONFIG_CMD_NAND)		/* NAND flash present ? */
 #	define CFG_ENV_IS_IN_NAND		/* environment in NAND flash */
 #	define CFG_ENV_OFFSET	CFG_NAND_ENV_OFFSET
 #	if CFG_ENV_SIZE < 0x20000		/* needs to be a multiple of block-size */
